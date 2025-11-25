@@ -33,6 +33,7 @@ class SprintCycleTimeAnalyzer
     "In Review",
     "Ready for Deploy",
   ].freeze
+  INFLATED_MULTIPLIER = 10  # Multiplier to determine inflated stories
 
   attr_reader :board_id, :start_date, :end_date, :year, :quarter, :show_inflated_stories, :exclude_inflated_stories
 
@@ -385,14 +386,14 @@ class SprintCycleTimeAnalyzer
       puts "\n" + "="*80
       puts "POTENTIALLY INFLATED STORIES"
       puts "="*80
-      puts "\n✅ No potentially inflated stories found (where business_days > story_points * 10) \n"
+      puts "\n✅ No potentially inflated stories found (where business_days > story_points * #{INFLATED_MULTIPLIER}) \n"
       return
     end
 
     puts "\n" + "="*80
     puts "POTENTIALLY INFLATED STORIES"
     puts "="*80
-    puts "\nCriteria: business_days > (story_points * 10)"
+    puts "\nCriteria: business_days > (story_points * #{INFLATED_MULTIPLIER})"
     puts "Found #{inflated_stories.length} potentially inflated stories \n"
 
     # Group by story points
@@ -400,7 +401,7 @@ class SprintCycleTimeAnalyzer
 
     grouped.keys.sort.each do |points|
       stories_for_points = grouped[points]
-      expected_days = points * 10
+      expected_days = points * INFLATED_MULTIPLIER
 
       puts "\n📊 #{points} Point Stories (expected ≤ #{expected_days} days, found #{stories_for_points.length} inflated):"
       puts "─" * 80
@@ -423,7 +424,7 @@ class SprintCycleTimeAnalyzer
   def story_inflated?(story)
     return false unless story[:story_points] && story[:business_days]
 
-    expected_days = story[:story_points] * 10
+    expected_days = story[:story_points] * INFLATED_MULTIPLIER
     story[:business_days] > expected_days
   end
 
@@ -501,7 +502,7 @@ if __FILE__ == $0
       options[:quarter] = q
     end
 
-    opts.on("--show-inflated-stories", "Show potentially inflated stories (business_days > story_points * 10)") do
+    opts.on("--show-inflated-stories", "Show potentially inflated stories (business_days > story_points * #{SprintCycleTimeAnalyzer::INFLATED_MULTIPLIER})") do
       options[:show_inflated_stories] = true
     end
 
