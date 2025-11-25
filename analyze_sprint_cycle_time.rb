@@ -147,14 +147,13 @@ class SprintCycleTimeAnalyzer
         key = issue["key"]
         # Only add if not already in our collection
         next if @all_stories_data[key]
-          @all_stories_data[key] = {
-            key: key,
-            summary: issue.dig("fields", "summary"),
-            story_points: issue.dig("fields", "customfield_10105"),
-            status: issue.dig("fields", "status", "name"),
-            changelog: nil,  # Will be fetched later
-          }
-        end
+        @all_stories_data[key] = {
+          key: key,
+          summary: issue.dig("fields", "summary"),
+          story_points: issue.dig("fields", "customfield_10105"),
+          status: issue.dig("fields", "status", "name"),
+          changelog: nil,  # Will be fetched later
+        }
       end
     end
 
